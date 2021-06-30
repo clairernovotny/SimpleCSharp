@@ -97,9 +97,29 @@ namespace SimpleCSharp
             using(var loggerFactory = LoggerFactory.Create(ConfigureLogging))
             {
                 var logger = loggerFactory.CreateLogger(GetType());
+
+                string? tempDirectory = null;
+                try
+                { 
+                    tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                    Directory.CreateDirectory(tempDirectory);
+                    var fileName = Path.GetFileNameWithoutExtension(File);
+                    System.IO.File.WriteAllText(Path.Combine(tempDirectory, $"{fileName}.csproj"), Resources.Template);
+                    System.IO.File.Copy(File, Path.Combine(tempDirectory, $"{fileName}.cs"));                   
+
+                }
+                finally
+                {
+                    if (tempDirectory != null)
+                    {
+                        Directory.Delete(tempDirectory, true);
+                    }
+                }
+
                 return await DoExecute(app, console, logger);
             }
         }
+
 
         protected abstract Task<int> DoExecute(CommandLineApplication app, IConsole console, ILogger logger);
     }
