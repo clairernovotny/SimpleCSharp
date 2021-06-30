@@ -15,7 +15,7 @@ stages:
   jobs:
   - job: Build
     pool:
-      vmImage: windows-latest
+      vmImage: ubuntu-latest
 
     steps:
     - task: UseDotNet@2
@@ -38,11 +38,11 @@ stages:
         command: pack
         packagesToPack: SimpleCSharp/SimpleCSharp.csproj
         configuration: $(BuildConfiguration)
-        packDirectory: $(Build.ArtifactStagingDirectory)\Packages
+        packDirectory: $(Build.ArtifactStagingDirectory)/Packages
         verbosityPack: Minimal
       displayName: Pack
       
-    - publish: $(Build.ArtifactStagingDirectory)\Packages
+    - publish: $(Build.ArtifactStagingDirectory)/Packages
       displayName: Publish build packages
       artifact: BuildPackages
 
@@ -73,9 +73,9 @@ stages:
 
           - pwsh: |
               .\SignClient "Sign" `
-              --baseDirectory "$(Pipeline.Workspace)\BuildPackages" `
+              --baseDirectory "$(Pipeline.Workspace)/BuildPackages" `
               --input "**/*.nupkg" `
-              --config "$(Pipeline.Workspace)\config\signclient.json" `
+              --config "$(Pipeline.Workspace)/config/signclient.json" `
               --user "$(SignClientUser)" `
               --secret '$(SignClientSecret)' `
               --name "" `
